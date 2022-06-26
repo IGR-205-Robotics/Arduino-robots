@@ -29,7 +29,7 @@ void handleMessageReceived(){
   int arg1 = server.arg("arg1").toInt();
   int arg2 = server.arg("arg2").toInt();
   int arg3 = server.arg("arg3").toInt();
-  Serial.println("message received");
+//  Serial.println("message received");
   server.send(200, "text/plain","Message received OK");
 }
 
@@ -39,15 +39,15 @@ void handleMessageReceived(){
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length)
 {
 
-  Serial.printf("webSocketEvent(%d, %d, ...)\r\n", num, type);
+//  Serial.printf("webSocketEvent(%d, %d, ...)\r\n", num, type);
   switch(type) {
     case WStype_DISCONNECTED:
-      Serial.printf("[%u] Disconnected!\r\n", num);
+//      Serial.printf("[%u] Disconnected!\r\n", num);
       break;
     case WStype_CONNECTED:
       {
         IPAddress ip = webSocket.remoteIP(num);
-        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\r\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+//        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\r\n", num, ip[0], ip[1], ip[2], ip[3], payload);
         // Send the current LED status
         webSocket.sendTXT(num, "Connected to ESP", strlen("Connected to ESP"));
         break;
@@ -63,21 +63,21 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         int var2 = 0;
         int var3 = 0;
         
-        Serial.printf("[%u] get Text: %s\r\n", num, payload);
+//        Serial.printf("[%u] get Text: %s\r\n", num, payload);
   
         //====================================================
         //Read text and Execute Touch event
         //====================================================
-        sprintf(str_holder, "%s", payload);
+//        sprintf(str_holder, "%s", payload);
   
         //Check if is a list
         if( str_holder[0] != '[' or str_holder[strlen(str_holder)-1] != ']'){
-          Serial.println("Not a list");
+//          Serial.println("Not a list");
           break;
         }
   
         else{
-          Serial.println("List received");
+//          Serial.println("List received");
   
           int start_pos = 1;
           int stop_pos = 1;
@@ -127,7 +127,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 
               //PARSING SINGLE COMMAND
               if(sscanf(command_list[i], "%d,%d,%d", &var1, &var2 ,&var3) <= 0){
-                  Serial.printf("Error parsing text for command: \n%s\n",command_list[i]);
+//                  Serial.printf("Error parsing text for command: \n%s\n",command_list[i]);
                   webSocket.sendTXT(num, "Error parsing text!");
               }
               else{
@@ -144,7 +144,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         break;
       }
     case WStype_BIN:
-      Serial.printf("[%u] get binary length: %u\r\n", num, length);
+//      Serial.printf("[%u] get binary length: %u\r\n", num, length);
       hexdump(payload, length);
 
       // echo data back to browser
@@ -152,7 +152,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       break;
       
     default:
-      Serial.printf("Invalid WStype [%d]\r\n", type);
+//      Serial.printf("Invalid WStype [%d]\r\n", type);
       break;
   }
 }
@@ -163,12 +163,12 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 void setup_serial(){
   Serial.begin(SERIAL_SPEED);
   while (!Serial) { ; }
-  Serial.println("initialisation");
+//  Serial.println("initialisation");
 }
 
 void setup_SPIFFS(){
     if(!SPIFFS.begin()){
-    Serial.println("SPIFF initialisation failed");
+//    Serial.println("SPIFF initialisation failed");
   }
 }
 
@@ -197,7 +197,7 @@ void setup_wifi(){
 }
 
 void serveAllFilesInSPIFFS(){
-  Serial.println("List and serve files in SPIFFS folder:");
+//  Serial.println("List and serve files in SPIFFS folder:");
   Dir dir = SPIFFS.openDir("");
   int filesize = 0;
   char filename[50];
@@ -206,9 +206,9 @@ void serveAllFilesInSPIFFS(){
       filesize = dir.fileSize(); //en octets
       //Put filename String in Char array needed for ServeStatic
       dir.fileName().toCharArray(filename,50); 
-      Serial.print(filename);
-      Serial.print(" - ");
-      Serial.printf("%.2f Ko\n", filesize/1000.);
+//      Serial.print(filename);
+//      Serial.print(" - ");
+//      Serial.printf("%.2f Ko\n", filesize/1000.);
       server.serveStatic(filename, SPIFFS, filename);
     }
 }
@@ -233,16 +233,16 @@ void setup_server(){
   // Launch server
   //=============================================================
   server.begin();
-  Serial.println("HTTP server started");
+//  Serial.println("HTTP server started");
 
   
   // Start the mDNS responder
   if (MDNS.begin(host_name)) {              
-    Serial.println("mDNS responder started");
+//    Serial.println("mDNS responder started");
     MDNS.addService("http", "tcp", 80);
   } 
   else {
-    Serial.println("Error setting up MDNS responder!");
+//    Serial.println("Error setting up MDNS responder!");
   }
 }
 
@@ -263,6 +263,9 @@ void handleMessageArgument() {
     message = server.arg("command"); //get value of command
   }
   server.send(200, "text/plain", message);
+  
+  Serial.print(message.toInt());
+  
 }
 
 void setup() {
