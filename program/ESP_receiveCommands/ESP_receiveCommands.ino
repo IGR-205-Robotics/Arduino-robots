@@ -193,7 +193,7 @@ void setup_wifi(){
   //wifiManager.autoConnect();
 
   //if you get here you have connected to the WiFi
-  Serial.println("connected to WiFi!");
+//  Serial.println("connected to WiFi!");
 }
 
 void serveAllFilesInSPIFFS(){
@@ -257,15 +257,15 @@ void handleMessageArgument() {
 
   if(server.arg("command") == "") {
     //parameter not found
-    message = "no command found";  
+    message = "0";  
   } else {
     //parameter found
     message = server.arg("command"); //get value of command
   }
   server.send(200, "text/plain", message);
-  
-  Serial.print(message.toInt());
-  
+  byte cb = 0;
+  cb = message.toInt();
+  Serial.write(cb);
 }
 
 void setup() {

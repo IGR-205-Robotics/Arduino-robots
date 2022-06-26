@@ -48,24 +48,24 @@
 SONAR sonar11(0x11),sonar12(0x12),sonar13(0x13);
 
 unsigned short distBuf[3];
-void sonarsUpdate() {
-    static unsigned char sonarCurr=1;
-    if(sonarCurr==3) sonarCurr=1;
-    else ++sonarCurr;
-    if(sonarCurr==1) {        
-        distBuf[1]=sonar12.getDist();        
-        sonar12.trigger(); 
-        sonar12.showDat();       
-    } else if(sonarCurr==2) {
-        distBuf[2]=sonar13.getDist();
-        sonar13.trigger();
-        sonar13.showDat();
-    } else {
-        distBuf[0]=sonar11.getDist();
-        sonar11.trigger();
-        sonar11.showDat();
-    }
-}
+//void sonarsUpdate() {
+//    static unsigned char sonarCurr=1;
+//    if(sonarCurr==3) sonarCurr=1;
+//    else ++sonarCurr;
+//    if(sonarCurr==1) {        
+//        distBuf[1]=sonar12.getDist();        
+//        sonar12.trigger(); 
+//        sonar12.showDat();       
+//    } else if(sonarCurr==2) {
+//        distBuf[2]=sonar13.getDist();
+//        sonar13.trigger();
+//        sonar13.showDat();
+//    } else {
+//        distBuf[0]=sonar11.getDist();
+//        sonar11.trigger();
+//        sonar11.showDat();
+//    }
+//}
 
 /*********************************************/
 
@@ -87,28 +87,28 @@ Omni3WD Omni(&wheel1,&wheel2,&wheel3);
 /******************************************/
 // demo
 unsigned long currMillis=0;
-void demoWithSensors(unsigned int speedMMPS,unsigned int distance) {   
-    if(millis()-currMillis>SONAR::duration) {
-        currMillis=millis();
-        sonarsUpdate();
-    }   
-   
-    if(distBuf[1]<distance) {
-        if(Omni.getCarStat()!=Omni3WD::STAT_RIGHT) Omni.setCarSlow2Stop(500);
-            Omni.setCarRight(speedMMPS);
-    } else if(distBuf[2]<distance) {
-        if(Omni.getCarStat()!=Omni3WD::STAT_LEFT) Omni.setCarSlow2Stop(500);
-            Omni.setCarLeft(speedMMPS);
-    } else if(distBuf[0]<distance) {
-        if(Omni.getCarStat()!=Omni3WD::STAT_ROTATERIGHT) Omni.setCarSlow2Stop(500);
-            Omni.setCarRotateRight(speedMMPS);
-    } else {
-        if(Omni.getCarStat()!=Omni3WD::STAT_ADVANCE) Omni.setCarSlow2Stop(500);
-            Omni.setCarAdvance(speedMMPS);
-    }
-    
-    Omni.PIDRegulate();
-}
+//void demoWithSensors(unsigned int speedMMPS,unsigned int distance) {   
+//    if(millis()-currMillis>SONAR::duration) {
+//        currMillis=millis();
+//        sonarsUpdate();
+//    }   
+//   
+//    if(distBuf[1]<distance) {
+//        if(Omni.getCarStat()!=Omni3WD::STAT_RIGHT) Omni.setCarSlow2Stop(500);
+//            Omni.setCarRight(speedMMPS);
+//    } else if(distBuf[2]<distance) {
+//        if(Omni.getCarStat()!=Omni3WD::STAT_LEFT) Omni.setCarSlow2Stop(500);
+//            Omni.setCarLeft(speedMMPS);
+//    } else if(distBuf[0]<distance) {
+//        if(Omni.getCarStat()!=Omni3WD::STAT_ROTATERIGHT) Omni.setCarSlow2Stop(500);
+//            Omni.setCarRotateRight(speedMMPS);
+//    } else {
+//        if(Omni.getCarStat()!=Omni3WD::STAT_ADVANCE) Omni.setCarSlow2Stop(500);
+//            Omni.setCarAdvance(speedMMPS);
+//    }
+//    
+//    Omni.PIDRegulate();
+//}
 
 /*****************************************/
 // setup()
@@ -119,15 +119,73 @@ void setup() {
     SONAR::init(13);
     
     Omni.PIDEnable(0.26,0.02,0,10);
-    
+    Serial.begin(9600); 
 }
 
 /****************************************/
 // loop()
 void loop() {
-    demoWithSensors(100,30);
+//    demoWithSensors(100,30);
     //delay(500);
    //Omni.demoActions(100);
     //Serial.println("working");
-}
 
+    int command = Serial.readString().toInt();
+
+  switch (command) {
+    case 1:
+      Omni.setCarAdvance(0);
+      Omni.setCarSpeedMMPS(200,500);
+      Omni.delayMS(200); 
+      break;
+    case 2:
+      Omni.setCarBackoff(0);
+      Omni.setCarSpeedMMPS(200,500);
+      Omni.delayMS(200);
+      break;
+    case 3:
+      Omni.setCarLeft(0);
+      Omni.setCarSpeedMMPS(200,500);
+      Omni.delayMS(200);
+      break;
+    case 4:
+      Omni.setCarRight(0);
+      Omni.setCarSpeedMMPS(200,500);
+      Omni.delayMS(200);
+      break;
+    case 5:
+      Omni.setCarUpperLeft(0);
+      Omni.setCarSpeedMMPS(200,500);
+      Omni.delayMS(200);
+      break;
+    case 6:
+      Omni.setCarLowerRight(0);
+      Omni.setCarSpeedMMPS(200,500);
+      Omni.delayMS(200);
+      break;
+    case 7:
+      Omni.setCarLowerLeft(0);
+      Omni.setCarSpeedMMPS(200,500);
+      Omni.delayMS(200);
+      break;
+    case 8:
+      Omni.setCarUpperRight(0);
+      Omni.setCarSpeedMMPS(200,500);
+      Omni.delayMS(200);
+      break;
+    case 9:
+      Omni.setCarRotateLeft(0);
+      Omni.setCarSpeedMMPS(200,500);
+      Omni.delayMS(200);
+      break;
+    case 10:
+      Omni.setCarRotateRight(0);
+      Omni.setCarSpeedMMPS(200,500);
+      Omni.delayMS(200);
+      break;
+    default:
+    Omni.setCarStop(0);
+    Omni.delayMS(200);
+      break;
+  }
+}
